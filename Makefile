@@ -2,7 +2,7 @@ au1: # To enable a speaker and disable headphones
         sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 0x0001 # move output to speake>
         sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0002 # enable speaker
         sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x2 # disable headphones
-au2: To disable a speaker and enable headphones
+au2: # To disable a speaker and enable headphones
         sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 0x0000 # move output to headph>
         sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0000 # disable speaker
         sudo hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 # pin output mode
