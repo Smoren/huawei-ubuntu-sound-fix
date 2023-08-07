@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# [DEPENDENCIES]
-#
-# apt install alsa-tools
-#
+echo "Installing dependencies..."
+sudo apt install alsa-tools
 
 echo "Copying files..."
 sudo cp huawei-soundcard-headphones-monitor.sh /usr/local/bin/
