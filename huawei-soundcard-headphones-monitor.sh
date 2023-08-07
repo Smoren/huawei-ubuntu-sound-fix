@@ -16,37 +16,63 @@
 # Internal Speaker 0x17 is coupled with Headphone Jack 0x16 so it should be explicitly disabled with EAPD/BTL Enable command.
 #
 
-function switch_to_dynamics() {
-    sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 0x0001 > /dev/null # move output to speake>
-    sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0002 > /dev/null # enable speaker
-    sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x2 > /dev/null # disable headphones
+function move_output() {
+    sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 "$@" > /dev/null 2> /dev/null
+}
+
+function move_output_to_speaker() {
+    move_output 0x0001
+}
+
+function move_output_to_headphones() {
+    move_output 0x0000
+}
+
+function switch_to_speaker() {
+    move_output_to_speaker
+    sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0002 > /dev/null 2> /dev/null # enable speaker
+    sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x2 > /dev/null 2> /dev/null # disable headphones
 }
 
 function switch_to_headphones() {
-    sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 0x0000 > /dev/null # move output to headph>
-    sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0000 > /dev/null # disable speaker
-    sudo hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 > /dev/null # pin output mode
-    sudo hda-verb /dev/snd/hwC0D0 0x1 0x716 0x2 > /dev/null # pin enable
-    sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x0 > /dev/null # clear pin value
+    move_output_to_headphones
+    sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0000 > /dev/null 2> /dev/null # disable speaker
+    sudo hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 > /dev/null 2> /dev/null # pin output mode
+    sudo hda-verb /dev/snd/hwC0D0 0x1 0x716 0x2 > /dev/null 2> /dev/null # pin enable
+    sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x0 > /dev/null 2> /dev/null # clear pin value
 }
 
-old_status=1
+old_status=0
 
 while true; do
     if amixer get Headphone | grep -q "off"; then
         status=1
         message="Headphones disconnected"
-        switch_to_dynamics
+        move_output_to_speaker
+        # switch_to_speaker
     else
         status=2
         message="Headphones connected"
-        switch_to_headphones
+        move_output_to_headphones
+        # switch_to_headphones
     fi
 
     if [ ${status} -ne ${old_status} ]; then
-        #notify-send "${message}"
+        case "${status}" in
+            1)
+                switch_to_headphones
+                sleep .1
+                switch_to_speaker
+                ;;
+            2)
+                switch_to_speaker
+                sleep .1
+                switch_to_headphones
+                ;;
+        esac
+        echo "${message}"
         old_status=$status
     fi
 
-    sleep 1
+    sleep .3
 done
