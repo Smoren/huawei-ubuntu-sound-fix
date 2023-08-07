@@ -1,13 +1,24 @@
-au1: # To enable a speaker and disable headphones
-        sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 0x0001 # move output to speake>
-        sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0002 # enable speaker
-        sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x2 # disable headphones
-au2: # To disable a speaker and enable headphones
-        sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 0x0000 # move output to headph>
-        sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0000 # disable speaker
-        sudo hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 # pin output mode
-        sudo hda-verb /dev/snd/hwC0D0 0x1 0x716 0x2 # pin enable
-        sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x0 # clear pin value
+au1: # Switch to dynamics
+	make switch_to_headphones
+	sleep 0.5
+	make switch_to_dynamics
+
+au2: # Switch to headphones
+	make switch_to_dynamics	
+	sleep 0.5
+	make switch_to_headphones
+
+switch_to_dynamics: # To enable a speaker and disable headphones
+	sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 0x0001 # move output to speake>
+	sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0002 # enable speaker
+	sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x2 # disable headphones
+
+switch_to_headphones: # To disable a speaker and enable headphones
+	sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 0x0000 # move output to headph>
+	sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0000 # disable speaker
+	sudo hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 # pin output mode
+	sudo hda-verb /dev/snd/hwC0D0 0x1 0x716 0x2 # pin enable
+	sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x0 # clear pin value
 
 # Looks like there is some weird hardware design, because from my prospective, the interesting widgets are:
 # 0x01 - Audio Function Group
