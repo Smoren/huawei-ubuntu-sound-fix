@@ -6,7 +6,7 @@ The headphone and speaker channels are mixed up in the sound card driver for Lin
 
 When headphones are connected, the system considers that sound should be output from the speakers. When the headphones are off, the system tries to output sound through them.
 
-### Problem details
+### Problem details (found [here](https://github.com/thesofproject/linux/issues/3350#issuecomment-1301070327))
 
 Looks like there is some weird hardware design, because from my prospective, the interesting widgets are:
 * 0x01 - Audio Function Group
