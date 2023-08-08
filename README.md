@@ -1,4 +1,4 @@
-# Huawei Matebook 14s sound card fix for Ubuntu
+# Huawei Matebook 14s soundcard fix for Ubuntu
 
 ## Problem
 
@@ -39,3 +39,18 @@ Machine:
   Mobo: HUAWEI model: HKF-WXX-PCB v: M1010 serial: <superuser required>
     UEFI: HUAWEI v: 1.06 date: 07/22/2022
 ```
+
+## Problem details
+
+Looks like there is some weird hardware design, because from my prospective, the interesting widgets are:
+* 0x01 - Audio Function Group
+* 0x10 - Headphones DAC (really both devices connected here)
+* 0x11 - Speaker DAC
+* 0x16 - Headphones Jack
+* 0x17 - Internal Speaker
+
+And:
+
+* widgets 0x16 and 0x17 simply should be connected to different DACs 0x10 and 0x11, but Internal Speaker 0x17 ignores the connection select command and use the value from Headphones Jack 0x16.
+* Headphone Jack 0x16 is controlled with some weird stuff so it should be enabled with GPIO commands for Audio Group 0x01.
+* Internal Speaker 0x17 is coupled with Headphone Jack 0x16 so it should be explicitly disabled with EAPD/BTL Enable command.
