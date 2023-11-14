@@ -1,7 +1,18 @@
 #!/bin/bash
 
-echo "Installing dependencies..."
-sudo apt install alsa-tools alsa-utils
+if command -v apt &>/dev/null; then
+    echo "Using apt to install dependencies..."
+    sudo apt update
+    sudo apt install -y alsa-tools alsa-utils
+else
+    if command -v pacman &>/dev/null; then
+        echo "Using pacman to install dependencies..."
+        sudo pacman -Sy alsa-tools alsa-utils --noconfirm
+    else
+        echo "Neither apt nor pacman found. Cannot install dependencies."
+        exit 1
+    fi
+fi
 
 echo "Copying files..."
 sudo cp huawei-soundcard-headphones-monitor.sh /usr/local/bin/
