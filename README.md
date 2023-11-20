@@ -1,4 +1,4 @@
-# Huawei Matebook 14s soundcard fix for Ubuntu
+# Huawei Matebook 14s / 16s soundcard fix for Ubuntu
 
 ## Problem
 
