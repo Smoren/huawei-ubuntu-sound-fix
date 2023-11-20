@@ -45,7 +45,7 @@ function switch_to_headphones() {
 old_status=0
 
 while true; do
-    if amixer get Headphone | grep -q "off"; then
+    if amixer -c 0 get Headphone | grep -q "off"; then
         status=1
         message="Headphones disconnected"
         move_output_to_speaker
