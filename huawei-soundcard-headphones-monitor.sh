@@ -49,12 +49,10 @@ while true; do
         status=1
         message="Headphones disconnected"
         move_output_to_speaker
-        # switch_to_speaker
     else
         status=2
         message="Headphones connected"
         move_output_to_headphones
-        # switch_to_headphones
     fi
 
     if [ ${status} -ne ${old_status} ]; then
