@@ -77,5 +77,5 @@ while true; do
         old_status=$status
     fi
 
-    sleep .3
+    sleep 1
 done
