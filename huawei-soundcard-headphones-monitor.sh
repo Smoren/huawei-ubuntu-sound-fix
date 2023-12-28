@@ -40,34 +40,24 @@ function switch_to_headphones() {
     sudo hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 > /dev/null 2> /dev/null # pin output mode
     sudo hda-verb /dev/snd/hwC0D0 0x1 0x716 0x2 > /dev/null 2> /dev/null # pin enable
     sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x0 > /dev/null 2> /dev/null # clear pin value
+
+    pacmd set-sink-port alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink "[Out] Headphones" # sets amixer sink port to headphones instead of the speaker
 }
 
 old_status=0
 
 while true; do
-    if amixer -c 0 get Headphone | grep -q "off"; then
+    if amixer -c 0 cget numid=14 | grep -q "values=off"; then
         status=1
         message="Headphones disconnected"
-        move_output_to_speaker
+	switch_to_speaker
     else
         status=2
         message="Headphones connected"
-        move_output_to_headphones
+        switch_to_headphones
     fi
 
     if [ ${status} -ne ${old_status} ]; then
-        case "${status}" in
-            1)
-                switch_to_headphones
-                sleep .1
-                switch_to_speaker
-                ;;
-            2)
-                switch_to_speaker
-                sleep .1
-                switch_to_headphones
-                ;;
-        esac
         echo "${message}"
         old_status=$status
     fi
