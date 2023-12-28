@@ -30,27 +30,42 @@ function move_output_to_headphones() {
 
 function switch_to_speaker() {
     move_output_to_speaker
-    sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0002 > /dev/null 2> /dev/null # enable speaker
-    sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x2 > /dev/null 2> /dev/null # disable headphones
+
+    # enable speaker
+    sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0002 > /dev/null 2> /dev/null
+
+    # disable headphones
+    sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x2 > /dev/null 2> /dev/null
 }
 
 function switch_to_headphones() {
     move_output_to_headphones
-    sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0000 > /dev/null 2> /dev/null # disable speaker
-    sudo hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 > /dev/null 2> /dev/null # pin output mode
-    sudo hda-verb /dev/snd/hwC0D0 0x1 0x716 0x2 > /dev/null 2> /dev/null # pin enable
-    sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x0 > /dev/null 2> /dev/null # clear pin value
 
-    pacmd set-sink-port alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink "[Out] Headphones" # sets amixer sink port to headphones instead of the speaker
+    # disable speaker
+    sudo hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0000 > /dev/null 2> /dev/null
+
+    # pin output mode
+    sudo hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 > /dev/null 2> /dev/null
+
+    # pin enable
+    sudo hda-verb /dev/snd/hwC0D0 0x1 0x716 0x2 > /dev/null 2> /dev/null
+
+    # clear pin value
+    sudo hda-verb /dev/snd/hwC0D0 0x1 0x715 0x0 > /dev/null 2> /dev/null
+
+    # sets amixer sink port to headphones instead of the speaker
+    pacmd set-sink-port alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink "[Out] Headphones"
 }
 
 old_status=0
 
 while true; do
+    # if headphone jack isn't plugged:
     if amixer -c 0 cget numid=14 | grep -q "values=off"; then
         status=1
         message="Headphones disconnected"
 	switch_to_speaker
+    # if headphone jack is plugged:
     else
         status=2
         message="Headphones connected"
