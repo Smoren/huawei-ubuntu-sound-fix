@@ -57,6 +57,8 @@ function switch_to_headphones() {
     pacmd set-sink-port alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink "[Out] Headphones"
 }
 
+sleep 2 # allows audio system to initialise first
+
 old_status=0
 
 while true; do
@@ -64,18 +66,27 @@ while true; do
     if amixer -c 0 cget numid=14 | grep -q "values=off"; then
         status=1
         message="Headphones disconnected"
-	switch_to_speaker
+	move_output_to_speaker
     # if headphone jack is plugged:
     else
         status=2
         message="Headphones connected"
-        switch_to_headphones
+	move_output_to_headphones
     fi
 
     if [ ${status} -ne ${old_status} ]; then
+	case "${status}" in
+	    1)
+		switch_to_speaker
+		;;
+	    2)
+		switch_to_headphones
+		;;
+	esac
+	
         echo "${message}"
         old_status=$status
     fi
 
-    sleep 1
+    sleep .3
 done
