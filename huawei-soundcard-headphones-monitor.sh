@@ -16,6 +16,9 @@
 # Internal Speaker 0x17 is coupled with Headphone Jack 0x16 so it should be explicitly disabled with EAPD/BTL Enable command.
 #
 
+# ensures script can run only once at a time
+pidof -o %PPID -x $0 >/dev/null && echo "Script $0 already running" && exit 1
+
 function move_output() {
     sudo hda-verb /dev/snd/hwC0D0 0x16 0x701 "$@" > /dev/null 2> /dev/null
 }
