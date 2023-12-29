@@ -68,21 +68,21 @@ while true; do
     # if headphone jack isn't plugged:
     if amixer -c 0 cget numid=14 | grep -q "values=off"; then
         status=1
-        message="Headphones disconnected"
 	move_output_to_speaker
     # if headphone jack is plugged:
     else
         status=2
-        message="Headphones connected"
 	move_output_to_headphones
     fi
 
     if [ ${status} -ne ${old_status} ]; then
 	case "${status}" in
 	    1)
+		message="Headphones disconnected"
 		switch_to_speaker
 		;;
 	    2)
+		message="Headphones connected"
 		switch_to_headphones
 		;;
 	esac
