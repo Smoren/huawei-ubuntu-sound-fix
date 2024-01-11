@@ -4,14 +4,16 @@ if command -v apt &>/dev/null; then
     echo "Using apt to install dependencies..."
     sudo apt update
     sudo apt install -y alsa-tools alsa-utils
+elif command -v pacman &>/dev/null; then
+    echo "Using pacman to install dependencies..."
+    sudo pacman -Sy alsa-tools alsa-utils --noconfirm
+elif command -v eopkg &>/dev/null; then
+    echo "Using eopkg to install dependencies..."
+    sudo eopkg up
+    sudo eopkg it alsa-tools alsa-utils -y
 else
-    if command -v pacman &>/dev/null; then
-        echo "Using pacman to install dependencies..."
-        sudo pacman -Sy alsa-tools alsa-utils --noconfirm
-    else
-        echo "Neither apt nor pacman found. Cannot install dependencies."
-        exit 1
-    fi
+    echo "Neither apt, pacman, nor eopkg found. Cannot install dependencies."
+    exit 1
 fi
 
 echo "Copying files..."
