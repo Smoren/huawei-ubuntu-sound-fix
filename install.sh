@@ -4,10 +4,12 @@ if command -v apt &>/dev/null; then
     echo "Using apt to install dependencies..."
     sudo apt update
     sudo apt install -y alsa-tools alsa-utils
-elif command -v pacman &>/dev/null; then
+elif 
+    command -v pacman &>/dev/null; then
     echo "Using pacman to install dependencies..."
     sudo pacman -Sy alsa-tools alsa-utils --noconfirm
-elif command -v eopkg &>/dev/null; then
+elif
+    command -v eopkg &>/dev/null; then
     echo "Using eopkg to install dependencies..."
     sudo eopkg up
     sudo eopkg it alsa-tools alsa-utils -y
