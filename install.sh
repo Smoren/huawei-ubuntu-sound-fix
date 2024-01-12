@@ -13,8 +13,12 @@ elif
     echo "Using eopkg to install dependencies..."
     sudo eopkg up
     sudo eopkg it alsa-tools alsa-utils -y
+elif 
+    command -v dnf &>/dev/null; then
+    echo "Using dnf to install dependencies..."
+    sudo dnf install -y alsa-tools alsa-utils
 else
-    echo "Neither apt, pacman, nor eopkg found. Cannot install dependencies."
+    echo "Neither apt, pacman, eopkg, nor dnf found. Cannot install dependencies."
     exit 1
 fi
 
