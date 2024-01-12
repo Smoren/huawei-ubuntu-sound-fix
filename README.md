@@ -1,4 +1,4 @@
-# Huawei Matebook 14s / 16s soundcard fix for Ubuntu
+# Huawei Matebook 14s / 16s soundcard fix for Ubuntu / Fedora
 
 ## Problem
 
@@ -41,7 +41,7 @@ systemctl stop huawei-soundcard-headphones-monitor
 
 ## Environment
 
-This fix definitely works under Ubuntu 22.04 for laptop model Huawei Matebook 14s.
+This fix definitely works under Ubuntu 22.04 and Fedora 39 for laptop model Huawei MateBook 14s.
 
 ```bash
 $ inxi -F
@@ -54,4 +54,3 @@ Machine:
   Mobo: HUAWEI model: HKF-WXX-PCB v: M1010 serial: <superuser required>
     UEFI: HUAWEI v: 1.06 date: 07/22/2022
 ```
-
