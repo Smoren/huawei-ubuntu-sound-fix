@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # [COMMENTS]
 #
@@ -79,7 +80,7 @@ old_status=0
 
 while true; do
     # if headphone jack isn't plugged:
-    if amixer "-c${card_index}" get Headphone | grep -q "off"; then 
+    if amixer "-c${card_index}" get Headphone | grep -q "off"; then
         status=1
 	    move_output_to_speaker
     # if headphone jack is plugged:
