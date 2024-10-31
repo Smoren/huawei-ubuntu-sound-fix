@@ -14,12 +14,15 @@ elif
     sudo eopkg up
     sudo eopkg it alsa-tools alsa-utils -y
 elif 
+    command -v zypper &>/dev/null; then
+    echo "Using zypper to install dependencies..."
+    sudo zypper install -y alsa-tools alsa-utils hda-verb
+elif 
     command -v dnf &>/dev/null; then
     echo "Using dnf to install dependencies..."
     sudo dnf install -y alsa-tools alsa-utils
 else
-    echo "Neither apt, pacman, eopkg, nor dnf found. Cannot install dependencies."
-    exit 1
+    echo "Neither apt, pacman, eopkg, zypper, nor dnf found. Cannot install dependencies."
 fi
 
 echo "Copying files..."
