@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # [COMMENTS]
 #
@@ -20,8 +19,11 @@ set -e
 # ensures script can run only once at a time
 pidof -o %PPID -x $0 >/dev/null && echo "Script $0 already running" && exit 1
 
+# HDA device path, set dynamically after card detection
+HDA_DEV=""
+
 function move_output() {
-   hda-verb /dev/snd/hwC0D0 0x16 0x701 "$@" > /dev/null 2> /dev/null
+   hda-verb "$HDA_DEV" 0x16 0x701 "$@" > /dev/null 2> /dev/null || true
 }
 
 function move_output_to_speaker() {
@@ -36,29 +38,29 @@ function switch_to_speaker() {
     move_output_to_speaker
 
     # enable speaker
-    hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0002 > /dev/null 2> /dev/null
+    hda-verb "$HDA_DEV" 0x17 0x70C 0x0002 > /dev/null 2> /dev/null || true
 
     # disable headphones
-    hda-verb /dev/snd/hwC0D0 0x1 0x715 0x2 > /dev/null 2> /dev/null
+    hda-verb "$HDA_DEV" 0x1 0x715 0x2 > /dev/null 2> /dev/null || true
 }
 
 function switch_to_headphones() {
     move_output_to_headphones
 
     # disable speaker
-    hda-verb /dev/snd/hwC0D0 0x17 0x70C 0x0000 > /dev/null 2> /dev/null
+    hda-verb "$HDA_DEV" 0x17 0x70C 0x0000 > /dev/null 2> /dev/null || true
 
     # pin output mode
-    hda-verb /dev/snd/hwC0D0 0x1 0x717 0x2 > /dev/null 2> /dev/null
+    hda-verb "$HDA_DEV" 0x1 0x717 0x2 > /dev/null 2> /dev/null || true
 
     # pin enable
-    hda-verb /dev/snd/hwC0D0 0x1 0x716 0x2 > /dev/null 2> /dev/null
+    hda-verb "$HDA_DEV" 0x1 0x716 0x2 > /dev/null 2> /dev/null || true
 
     # clear pin value
-    hda-verb /dev/snd/hwC0D0 0x1 0x715 0x0 > /dev/null 2> /dev/null
+    hda-verb "$HDA_DEV" 0x1 0x715 0x0 > /dev/null 2> /dev/null || true
 
-    # sets amixer sink port to headphones instead of the speaker
-    pacmd set-sink-port alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink "[Out] Headphones"
+    # sets sink port to headphones instead of the speaker
+    set_sink_port "[Out] Headphones"
 }
 
 function get_sound_card_index() {
@@ -68,13 +70,45 @@ function get_sound_card_index() {
     echo $card_index
 }
 
+function set_sink_port() {
+    local port="$1"
+    local sink="alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink"
+
+    # Find the user running the audio server (PipeWire or PulseAudio)
+    local audio_user
+    audio_user=$(ps -C pipewire -o user= 2>/dev/null | head -n1)
+    if [ -z "$audio_user" ]; then
+        audio_user=$(ps -C pulseaudio -o user= 2>/dev/null | head -n1)
+    fi
+
+    if [ -z "$audio_user" ]; then
+        echo "Warning: No audio server process found, cannot set sink port"
+        return
+    fi
+
+    local uid
+    uid=$(id -u "$audio_user" 2>/dev/null)
+
+    if [ -z "$uid" ]; then
+        echo "Warning: Cannot determine UID for user $audio_user"
+        return
+    fi
+
+    # Run pactl as the audio user with their session environment
+    runuser -u "$audio_user" -- env XDG_RUNTIME_DIR="/run/user/${uid}" \
+        pactl set-sink-port "$sink" "$port" 2>/dev/null || true
+}
+
 sleep 2 # allows audio system to initialise first
 
 card_index=$(get_sound_card_index)
-if [ $card_index == "" ]; then
-    echo "sof-dha-dsp card is not found in /proc/asound/cards"
-    return 1
+if [ "$card_index" = "" ]; then
+    echo "sof-hda-dsp card is not found in /proc/asound/cards"
+    exit 1
 fi
+
+HDA_DEV="/dev/snd/hwC${card_index}D0"
+echo "Using HDA device: $HDA_DEV (card index: $card_index)"
 
 old_status=0
 
