@@ -58,6 +58,7 @@ Machine:
 ## Say thanks
 
 If you want to thank me for this solution, you can subscribe to my [Github profile](https://github.com/Smoren) and also give stars to [my open source projects](https://github.com/Smoren?tab=repositories&q=&type=public&language=&sort=stargazers), e.g.:
+* [Transferum](https://github.com/Smoren/transferum-ts) — A Typescript-first data transfer graph library based on uniform capability model (more then RxJS).
 * [MolecuLarva](https://github.com/Smoren/molecular-ts) — Virtual chemistry simultaion. Visualization of the behavior of particles in 2-dimensional and 3-dimensional space for artifical life research.
 * [IterTools TS](https://github.com/Smoren/itertools-ts) — Extended itertools port for TypeScript and JavaScript. Provides a huge set of functions for working with iterable collections (including async ones).
 * [Genetic Search TS](https://github.com/Smoren/genetic-search-ts) — Multiprocessing Genetic Algorithm Implementation for TypeScript.
