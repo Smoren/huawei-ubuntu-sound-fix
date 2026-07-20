@@ -71,7 +71,7 @@ function get_sound_card_index() {
 sleep 2 # allows audio system to initialise first
 
 card_index=$(get_sound_card_index)
-if [ $card_index == "" ]; then
+if [ "$card_index" = "" ]; then
     echo "sof-dha-dsp card is not found in /proc/asound/cards"
     return 1
 fi
